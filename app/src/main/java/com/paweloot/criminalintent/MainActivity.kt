@@ -1,7 +1,7 @@
 package com.paweloot.criminalintent
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
         if (currentFragment == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, CrimeFragment())
+                .add(R.id.main_fragment_container, CrimeListFragment.newInstance())
                 .commit()
         }
     }
