@@ -10,8 +10,11 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import java.util.*
 
-class CrimeFragment : Fragment() {
+private const val ARG_CRIME_ID = "crime_id"
+
+class CrimeDetailsFragment : Fragment() {
 
     private lateinit var crime: Crime
 
@@ -23,6 +26,8 @@ class CrimeFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         crime = Crime()
+
+        val crimeId: UUID? = arguments?.getSerializable(ARG_CRIME_ID) as UUID?
     }
 
     override fun onCreateView(
@@ -64,6 +69,18 @@ class CrimeFragment : Fragment() {
 
         solvedCheckBox.setOnCheckedChangeListener { _, isChecked ->
             crime.isSolved = isChecked
+        }
+    }
+
+    companion object {
+        fun newInstance(crimeId: UUID): CrimeDetailsFragment {
+            val args = Bundle().apply {
+                putSerializable("ARG", crimeId)
+            }
+
+            return CrimeDetailsFragment().apply {
+                arguments = args
+            }
         }
     }
 }
