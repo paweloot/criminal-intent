@@ -92,6 +92,12 @@ class CrimeDetailsFragment : Fragment() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        crimeDetailsViewModel.saveCrime(crime)
+    }
+
     private fun updateUI() {
         titleField.setText(crime.title)
         dateButton.text = crime.date.toString()

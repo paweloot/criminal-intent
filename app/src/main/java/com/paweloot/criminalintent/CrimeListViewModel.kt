@@ -4,5 +4,6 @@ import androidx.lifecycle.ViewModel
 
 class CrimeListViewModel : ViewModel() {
 
-    val crimeListLiveData = CrimeRepository.get().getCrimes()
+    private val crimeRepository = CrimeRepository.get()
+    val crimeListLiveData = crimeRepository.getCrimes()
 }
