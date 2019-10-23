@@ -15,8 +15,10 @@ import androidx.lifecycle.ViewModelProviders
 import java.util.*
 
 private const val ARG_CRIME_ID = "crime_id"
+private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
 
-class CrimeDetailsFragment : Fragment() {
+class CrimeDetailsFragment : Fragment(), DatePickerFragment.Callbacks {
 
     private lateinit var crime: Crime
 
@@ -48,10 +50,7 @@ class CrimeDetailsFragment : Fragment() {
         dateButton = view.findViewById(R.id.crime_date) as Button
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
 
-        dateButton.apply {
-            text = crime.date.toString()
-            isEnabled = false
-        }
+        dateButton.text = crime.date.toString()
 
         return view
     }
@@ -90,12 +89,24 @@ class CrimeDetailsFragment : Fragment() {
         solvedCheckBox.setOnCheckedChangeListener { _, isChecked ->
             crime.isSolved = isChecked
         }
+
+        dateButton.setOnClickListener {
+            DatePickerFragment.newInstance(crime.date).apply {
+                setTargetFragment(this@CrimeDetailsFragment, REQUEST_DATE)
+                show(this@CrimeDetailsFragment.requireFragmentManager(), DIALOG_DATE)
+            }
+        }
     }
 
     override fun onStop() {
         super.onStop()
 
         crimeDetailsViewModel.saveCrime(crime)
+    }
+
+    override fun onDateSelected(date: Date) {
+        crime.date = date
+        updateUI()
     }
 
     private fun updateUI() {
