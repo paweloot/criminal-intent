@@ -12,18 +12,24 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 private const val ARG_CRIME_ID = "crime_id"
 private const val DIALOG_DATE = "DialogDate"
+private const val DIALOG_TIME = "DialogTime"
 private const val REQUEST_DATE = 0
+private const val REQUEST_TIME = 1
 
-class CrimeDetailsFragment : Fragment(), DatePickerFragment.Callbacks {
+class CrimeDetailsFragment : Fragment(), DatePickerFragment.Callbacks,
+    TimePickerFragment.Callbacks {
 
     private lateinit var crime: Crime
 
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
+    private lateinit var timeButton: Button
     private lateinit var solvedCheckBox: CheckBox
 
     private val crimeDetailsViewModel: CrimeDetailsViewModel by lazy {
@@ -44,13 +50,15 @@ class CrimeDetailsFragment : Fragment(), DatePickerFragment.Callbacks {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_crime, container, false)
+        val view = inflater.inflate(R.layout.fragment_crime_details, container, false)
 
         titleField = view.findViewById(R.id.crime_title) as EditText
         dateButton = view.findViewById(R.id.crime_date) as Button
+        timeButton = view.findViewById(R.id.crime_time) as Button
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
 
-        dateButton.text = crime.date.toString()
+        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(crime.date)
+        timeButton.text = DateFormat.getTimeInstance(DateFormat.FULL).format(crime.date)
 
         return view
     }
@@ -96,6 +104,13 @@ class CrimeDetailsFragment : Fragment(), DatePickerFragment.Callbacks {
                 show(this@CrimeDetailsFragment.requireFragmentManager(), DIALOG_DATE)
             }
         }
+
+        timeButton.setOnClickListener {
+            TimePickerFragment.newInstance(crime.date).apply {
+                setTargetFragment(this@CrimeDetailsFragment, REQUEST_TIME)
+                show(this@CrimeDetailsFragment.requireFragmentManager(), DIALOG_TIME)
+            }
+        }
     }
 
     override fun onStop() {
@@ -109,9 +124,20 @@ class CrimeDetailsFragment : Fragment(), DatePickerFragment.Callbacks {
         updateUI()
     }
 
+    override fun onTimeSelected(hour: Int, minute: Int) {
+        val calendar = Calendar.getInstance()
+        calendar.time = crime.date
+
+        calendar.set(Calendar.HOUR, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        crime.date = calendar.time
+        updateUI()
+    }
+
     private fun updateUI() {
         titleField.setText(crime.title)
-        dateButton.text = crime.date.toString()
+        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(crime.date)
+        timeButton.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(crime.date)
 
         solvedCheckBox.apply {
             isChecked = crime.isSolved
